@@ -18,6 +18,8 @@ type DriftProps = {
   sway?: number;
   opacity?: number;
   seed?: number;
+  /** Optional live multiplier (0–1) on opacity, e.g. to fade particles with the story. */
+  intensity?: { current: number };
 };
 
 /**
@@ -35,6 +37,7 @@ export default function Drift({
   sway = 0.3,
   opacity = 0.9,
   seed = 1,
+  intensity,
 }: DriftProps) {
   const [ax, ay, az] = area;
 
@@ -99,6 +102,7 @@ export default function Drift({
 
   useFrame((state) => {
     material.userData.uniforms.uTime.value = state.clock.elapsedTime;
+    if (intensity) material.opacity = opacity * intensity.current;
   });
 
   return <points geometry={geometry} material={material} position={position} frustumCulled={false} />;

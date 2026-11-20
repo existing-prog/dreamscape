@@ -4,6 +4,8 @@ export type Chapter = {
   title: string;
   tagline: string;
   panels: string[];
+  /** Give the chapter's last sentence a longer hold before moving on. */
+  linger?: boolean;
 };
 
 export const CHAPTERS: Chapter[] = [
@@ -39,6 +41,7 @@ export const CHAPTERS: Chapter[] = [
       'Here, light is alive. It pulses through soft bodies that drift without fear, singing in frequencies older than words.',
       'The deeper you sink, the clearer it becomes: you were never drowning. You were learning to breathe.',
     ],
+    linger: true,
   },
   {
     id: 'ascension',
@@ -50,5 +53,6 @@ export const CHAPTERS: Chapter[] = [
       'Islands of stone hang in the warm air, each one a piece of you, finally weightless.',
       'At the summit there is only light — and the quiet understanding that every dream is a way home.',
     ],
+    linger: true,
   },
 ];

@@ -10,11 +10,12 @@ import { isShown, makeDunes, useRimMaterial } from '../three/helpers';
 // Drifting "memory fragments" — soft, morphing pastel forms.
 const FRAGMENTS: { p: [number, number, number]; s: number; c: string; speed: number }[] = [
   { p: [-8, 3, -4], s: 1.4, c: '#ffd6e0', speed: 1.2 },
-  { p: [9, 4.5, -8], s: 1.8, c: '#c8b6ff', speed: 0.9 },
+  // Kept high and to the left, away from the right-hand paragraph.
+  { p: [-4, 10, -26], s: 1.6, c: '#c8b6ff', speed: 0.9 },
   { p: [-12, 6, -16], s: 2.2, c: '#b8e0ff', speed: 0.7 },
   { p: [13, 1.5, -18], s: 1.2, c: '#ffe5b4', speed: 1.4 },
   { p: [-6, -0.5, -22], s: 1.6, c: '#ffc6e8', speed: 1.0 },
-  { p: [7, 8, -26], s: 2.6, c: '#d9c8ff', speed: 0.6 },
+  { p: [-11, 13, -38], s: 2.4, c: '#d9c8ff', speed: 0.6 },
   { p: [-15, 2, 2], s: 0.9, c: '#ffe5b4', speed: 1.6 },
   { p: [12, 2.5, 4], s: 0.8, c: '#b8e0ff', speed: 1.5 },
 ];

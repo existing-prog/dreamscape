@@ -126,11 +126,11 @@ function KelpForest({ items }: { items: KelpItem[] }) {
 }
 
 const JELLIES: { p: Vec3; c: string; s: number }[] = [
-  { p: [-6, 0, -8], c: '#5ff2ff', s: 1.2 },
+  { p: [4, 5, -18], c: '#5ff2ff', s: 1.2 },
   { p: [8, 3, -14], c: '#b18cff', s: 1.6 },
   { p: [-3, 5, -24], c: '#ff7ad9', s: 1.0 },
   { p: [12, -3, -28], c: '#7affc8', s: 1.3 },
-  { p: [-12, 2, -20], c: '#5ff2ff', s: 1.8 },
+  { p: [9, 7, -30], c: '#5ff2ff', s: 1.8 },
   { p: [3, -4, -34], c: '#b18cff', s: 2.2 },
   { p: [-9, 7, 4], c: '#7affc8', s: 0.9 },
   { p: [10, 6, 10], c: '#ff7ad9', s: 0.8 },

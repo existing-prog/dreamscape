@@ -1,4 +1,18 @@
+/* Registered so the scrim colour can cross-fade between worlds. */
+@property --scrim {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+@property --scrim-soft {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
 :root {
+  --scrim: rgba(253, 234, 228, 0.72);
+  --scrim-soft: rgba(253, 234, 228, 0.3);
   --ink: #3b2440;
   --ink-soft: rgba(59, 36, 64, 0.62);
   --line: rgba(59, 36, 64, 0.25);
@@ -9,24 +23,33 @@
 }
 
 /* Ink colour follows the world: dark text at dawn & in the light, pale text in the void & the deep. */
+.dreamscape {
+  transition: --scrim 1.6s ease, --scrim-soft 1.6s ease;
+}
 .dreamscape[data-chapter='1'],
 .dreamscape[data-chapter='2'] {
   --ink: #ede6ff;
   --ink-soft: rgba(237, 230, 255, 0.62);
   --line: rgba(237, 230, 255, 0.25);
   --glow: rgba(120, 90, 255, 0.35);
+  --scrim: rgba(3, 1, 8, 0.82);
+  --scrim-soft: rgba(3, 1, 8, 0.4);
 }
 .dreamscape[data-chapter='2'] {
   --ink: #dcfbff;
   --ink-soft: rgba(220, 251, 255, 0.62);
   --line: rgba(220, 251, 255, 0.25);
   --glow: rgba(60, 220, 255, 0.3);
+  --scrim: rgba(1, 14, 26, 0.72);
+  --scrim-soft: rgba(1, 14, 26, 0.32);
 }
 .dreamscape[data-chapter='3'] {
   --ink: #4a3110;
   --ink-soft: rgba(74, 49, 16, 0.62);
   --line: rgba(74, 49, 16, 0.25);
   --glow: rgba(255, 246, 225, 0.6);
+  --scrim: rgba(255, 244, 226, 0.74);
+  --scrim-soft: rgba(255, 244, 226, 0.32);
 }
 
 * {
@@ -103,6 +126,10 @@ button {
 .panel {
   height: 180vh;
 }
+/* A chapter's closing sentence gets a longer hold. */
+.panel--linger {
+  height: 280vh;
+}
 
 .sticky {
   position: sticky;
@@ -157,8 +184,27 @@ button {
   justify-content: flex-end;
 }
 
+/* Keep left-hand sentences clear of the chapter menu. */
+@media (min-width: 721px) {
+  .panel--left .sticky {
+    padding-left: clamp(220px, 17vw, 320px);
+  }
+}
+
 .panel__inner {
+  position: relative;
+  isolation: isolate;
   max-width: 34rem;
+}
+
+/* A quiet pool of the world's own colour behind each sentence. */
+.panel__inner::before {
+  content: '';
+  position: absolute;
+  inset: -45% -28%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--scrim) 0%, var(--scrim-soft) 55%, transparent 100%);
 }
 
 .panel__index {

@@ -7,13 +7,16 @@ import { curveU, scrollState, travelAmount } from '@/lib/scrollState';
 
 const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 
+/** How far the camera turns away from the text, relative to its distance to the subject. */
+const FRAMING = 0.24;
+
 // Two keyframes per world: where the camera arrives, and where it lingers
 // before the journey to the next world begins.
 const POSITIONS = [
   v(0, 2, 16), // Awakening — arrive
   v(4, 1.5, -6), //            linger (you pass through the "eye" ring next)
   v(0, 0, -60), // Void — arrive
-  v(-6, 2, -78), //       linger, close to the event horizon
+  v(-7, 2.5, -72), //      linger, near the event horizon but leaving room for the text
   v(0, -70, -150), // Deep — arrive
   v(4, -82, -174), //       linger among the jellyfish
   v(0, 70, -235), // Ascension — arrive, just above the clouds
@@ -48,6 +51,7 @@ export default function CameraRig() {
     [],
   );
   const mouse = useRef({ x: 0, y: 0 });
+  const framing = useRef(0);
 
   useFrame((state, delta) => {
     const { camera, pointer, clock } = state;
@@ -62,9 +66,20 @@ export default function CameraRig() {
     mouse.current.x = THREE.MathUtils.damp(mouse.current.x, pointer.x, 2.2, d);
     mouse.current.y = THREE.MathUtils.damp(mouse.current.y, pointer.y, 2.2, d);
 
-    tmp.fwd.subVectors(tmp.tgt, tmp.pos).normalize();
+    tmp.fwd.subVectors(tmp.tgt, tmp.pos);
+    const distance = tmp.fwd.length();
+    tmp.fwd.normalize();
     tmp.right.crossVectors(tmp.fwd, tmp.worldUp).normalize();
     tmp.up.crossVectors(tmp.right, tmp.fwd).normalize();
+
+    // Reframe around the text: words on the left → turn left so the subject
+    // slides to the right half of the screen (and vice versa).
+    let side = 0;
+    for (const f of scrollState.frames) side += f.v;
+    framing.current = THREE.MathUtils.damp(framing.current, side, 1.6, d);
+    const shift = framing.current * distance * FRAMING;
+    tmp.tgt.addScaledVector(tmp.right, shift);
+    tmp.pos.addScaledVector(tmp.right, shift * 0.35);
 
     // Idle "breathing" drift so the dream never feels perfectly still.
     const bx = Math.sin(t * 0.31) * 0.25;

@@ -32,9 +32,10 @@ export default function Overlay({ onChapterChange }: { onChapterChange: (i: numb
           onUpdate: (self) => {
             scrollState.target = (k + self.progress) / CHAPTER_COUNT;
           },
-          onToggle: (self) => {
-            if (self.isActive) onChapterChange(k);
-          },
+          // onEnter/onEnterBack (not onToggle): they still fire when a jump
+          // lands exactly at the end of the page, where isActive is false.
+          onEnter: () => onChapterChange(k),
+          onEnterBack: () => onChapterChange(k),
         });
       });
 
@@ -52,19 +53,32 @@ export default function Overlay({ onChapterChange }: { onChapterChange: (i: numb
           .set({}, {}, 1);
       });
 
+      scrollState.frames.length = 0;
       gsap.utils.toArray<HTMLElement>('.panel').forEach((panel) => {
         const inner = panel.querySelector('.panel__inner');
+        const side = panel.classList.contains('panel--right') ? 1 : -1;
+        const frame = { v: 0 };
+        scrollState.frames.push(frame);
+
         const tl = gsap
           .timeline({ scrollTrigger: { trigger: panel, start: 'top bottom', end: 'bottom top', scrub: SCRUB } })
+          // The camera starts making room slightly before the words arrive.
+          .fromTo(frame, { v: 0 }, { v: side, duration: 0.3, ease: 'sine.inOut' }, 0.04)
           .fromTo(inner, { autoAlpha: 0, y: 80 }, { autoAlpha: 1, y: 0, duration: 0.24, ease: 'power2.out' }, 0.12);
         if (!panel.classList.contains('panel--final')) {
-          tl.to(inner, { autoAlpha: 0, y: -80, duration: 0.24, ease: 'power2.in' }, 0.64);
+          // Lingering panels hold their sentence longer before it rises away.
+          const outAt = panel.classList.contains('panel--linger') ? 0.7 : 0.64;
+          tl.to(inner, { autoAlpha: 0, y: -80, duration: 0.22, ease: 'power2.in' }, outAt);
+          tl.to(frame, { v: 0, duration: 0.3, ease: 'sine.inOut' }, outAt);
         }
         tl.set({}, {}, 1);
       });
     }, root);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      scrollState.frames.length = 0;
+    };
   }, [onChapterChange]);
 
   const restart = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -85,9 +99,18 @@ export default function Overlay({ onChapterChange }: { onChapterChange: (i: numb
             </div>
           </div>
           {ch.panels.map((text, i) => {
-            const final = k === CHAPTERS.length - 1 && i === ch.panels.length - 1;
+            const lastOfChapter = i === ch.panels.length - 1;
+            const final = k === CHAPTERS.length - 1 && lastOfChapter;
+            const classes = [
+              'panel',
+              `panel--${i % 2 ? 'right' : 'left'}`,
+              final && 'panel--final',
+              ch.linger && lastOfChapter && 'panel--linger',
+            ]
+              .filter(Boolean)
+              .join(' ');
             return (
-              <div key={i} className={`panel panel--${i % 2 ? 'right' : 'left'}${final ? ' panel--final' : ''}`}>
+              <div key={i} className={classes}>
                 <div className="sticky">
                   <div className="panel__inner">
                     <span className="panel__index">

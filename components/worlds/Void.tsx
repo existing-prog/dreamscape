@@ -12,19 +12,20 @@ function AccretionDisk() {
   const map = useMemo(() => getDotTexture(), []);
   const { positions, colors } = useMemo(() => {
     const r = seeded(7);
-    const N = 3500;
+    const N = 2400;
     const positions = new Float32Array(N * 3);
     const colors = new Float32Array(N * 3);
     const hot = new THREE.Color(3.2, 1.6, 0.8);
     const cold = new THREE.Color(0.7, 0.35, 1.8);
     const c = new THREE.Color();
     for (let i = 0; i < N; i++) {
-      const radius = 5 + Math.pow(r(), 1.8) * 13;
+      // Tighter disk: leaves calm, dark space at the sides where the text sits.
+      const radius = 5 + Math.pow(r(), 2.2) * 9;
       const a = r() * Math.PI * 2;
       positions[i * 3] = Math.cos(a) * radius;
       positions[i * 3 + 1] = (r() - 0.5) * 0.5 * (radius / 8);
       positions[i * 3 + 2] = Math.sin(a) * radius;
-      c.copy(hot).lerp(cold, (radius - 5) / 13);
+      c.copy(hot).lerp(cold, (radius - 5) / 9);
       colors.set([c.r, c.g, c.b], i * 3);
     }
     return { positions, colors };
@@ -55,7 +56,7 @@ function AccretionDisk() {
 }
 
 export default function Void() {
-  const halo = useRimMaterial('#8b5cf6', 3, 2.6);
+  const halo = useRimMaterial('#8b5cf6', 1.8, 3.2);
   const monoliths = useRef<THREE.Group>(null!);
   const edges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1.2, 12, 0.5)), []);
 
@@ -89,7 +90,7 @@ export default function Void() {
   useFrame((state, dt) => {
     if (!isShown(monoliths.current)) return;
     monoliths.current.rotation.y += dt * 0.02;
-    halo.uniforms.uIntensity.value = 2.6 + Math.sin(state.clock.elapsedTime * 0.8) * 0.6;
+    halo.uniforms.uIntensity.value = 1.7 + Math.sin(state.clock.elapsedTime * 0.8) * 0.3;
   });
 
   return (
@@ -101,7 +102,7 @@ export default function Void() {
         <sphereGeometry args={[4, 64, 64]} />
         <meshBasicMaterial color="#000000" />
       </mesh>
-      <mesh material={halo} scale={1.22}>
+      <mesh material={halo} scale={1.14}>
         <sphereGeometry args={[4, 64, 64]} />
       </mesh>
       <group rotation={[0.38, 0, 0.18]}>
@@ -135,7 +136,7 @@ export default function Void() {
         </Float>
       ))}
 
-      <Drift count={300} area={[70, 40, 70]} color={[0.9, 0.7, 1.6]} size={0.12} speed={0.15} sway={0.3} seed={9} />
+      <Drift count={140} area={[70, 40, 70]} color={[0.55, 0.42, 1.0]} size={0.1} speed={0.15} sway={0.3} seed={9} />
     </group>
   );
 }
